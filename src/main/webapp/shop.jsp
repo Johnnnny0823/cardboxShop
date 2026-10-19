@@ -330,6 +330,72 @@
                 text-align: center;
             }
         }
+
+        /* Site theme overrides: match the shared look in css/common.css */
+        body {
+            font-family: 'Microsoft YaHei', '微軟雅黑', Arial, sans-serif;
+            background-color: #f5f7fb;
+        }
+
+        .container {
+            width: 100%;           /* common.css makes body a flex box; without this the page shrank to ~380px */
+            max-width: 1100px;
+            flex: 1;
+            margin: 40px auto 60px;
+            padding: 0 24px;
+        }
+
+        .cart-header {
+            padding: 24px 32px;
+            border-radius: 16px;
+            border-left: 6px solid #003da5;
+            box-shadow: 0 4px 20px rgba(0, 61, 165, 0.08);
+            gap: 24px;
+        }
+
+        .cart-header h2 {
+            color: #003da5;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .btn,
+        .checkout-btn {
+            background: linear-gradient(135deg, #003da5 0%, #00c3ff 100%);
+            border-radius: 999px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 61, 165, 0.25);
+        }
+
+        .btn {
+            padding: 12px 32px;
+        }
+
+        .login-prompt,
+        .empty-cart,
+        .cart-items,
+        .cart-summary {
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 61, 165, 0.08);
+        }
+
+        .login-prompt,
+        .empty-cart {
+            padding: 64px 32px;
+        }
+
+        .login-prompt h3,
+        .empty-cart h3 {
+            color: #003da5;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .login-prompt p,
+        .empty-cart p {
+            color: #666;
+            margin-bottom: 28px;
+        }
     </style>
 </head>
 
@@ -355,6 +421,7 @@
         <% if (!isLoggedIn) { %>
             <!-- 未登入提示 -->
             <div class="login-prompt">
+                <div class="empty-cart-icon">🔐</div>
                 <h3>請先登入會員</h3>
                 <p>登入後即可查看您的購物車內容</p>
                 <a href="member.jsp" class="btn">立即登入</a>

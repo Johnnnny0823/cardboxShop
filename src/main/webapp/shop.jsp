@@ -108,6 +108,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>購物車 - NBA卡包商城</title>
+    <link rel="stylesheet" href="css/common.css">
     <style>
         * {
             margin: 0;
@@ -120,57 +121,6 @@
             line-height: 1.6;
             color: #333;
             background-color: #f4f4f4;
-        }
-
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-        }
-
-        .logo h1 {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .nav-menu {
-            background-color: rgba(255,255,255,0.1);
-        }
-
-        .nav-menu ul {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            list-style: none;
-            padding: 0 2rem;
-        }
-
-        .nav-menu li a {
-            display: block;
-            color: white;
-            text-decoration: none;
-            padding: 15px 20px;
-            transition: background-color 0.3s;
-        }
-
-        .nav-menu li a:hover, .nav-menu li a.active {
-            background-color: rgba(255,255,255,0.2);
         }
 
         .container {

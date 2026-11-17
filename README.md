@@ -10,14 +10,31 @@
 
 ![NBA 卡包商城首頁，顯示商品分類導覽與商城主視覺](docs/screenshots/home.png)
 
-| 球員卡瀏覽 | 商品詳情 |
+### 商品瀏覽
+
+| NBA 球員卡 | NBA 卡盒專區 |
 | --- | --- |
-| ![球員卡列表，含篩選選單與商品卡片](docs/screenshots/cards.png) | ![商品詳情，顯示姚明球員卡、價格與商品資訊](docs/screenshots/product-detail.png) |
+| ![球員卡列表，含篩選選單與商品卡片](docs/screenshots/cards.png) | ![卡盒專區，顯示球員主題卡盒與商品標籤](docs/screenshots/card-boxes.png) |
+| **卡片周邊商品** | **特別商品** |
+| ![卡片周邊商品列表，顯示展示架、收藏盒與保護配件](docs/screenshots/accessories.png) | ![特別商品列表，顯示紀念卡與限量商品](docs/screenshots/special.png) |
+
+### 商品詳情與購物車
+
+| 商品詳情 | 購物車 |
+| --- | --- |
+| ![商品詳情，顯示姚明球員卡、價格與商品資訊](docs/screenshots/product-detail.png) | ![購物車頁面的未登入狀態，畫面提供登入入口](docs/screenshots/cart.png) |
+
+### 會員與評論
 
 | 會員登入 | 商品評論留言板 |
 | --- | --- |
 | ![會員登入畫面，含登入表單與註冊入口](docs/screenshots/login.png) | ![商品評論留言板，顯示評論統計與最新評論區](docs/screenshots/message-board.png) |
 
+### 服務與商城資訊
+
+| 服務中心 | 關於我們 |
+| --- | --- |
+| ![服務中心，含購物指南、配送資訊、退換貨與會員服務](docs/screenshots/help.png) | ![關於我們頁面，介紹商城的品牌故事與使命](docs/screenshots/about.png) |
 
 ## 原始碼
 

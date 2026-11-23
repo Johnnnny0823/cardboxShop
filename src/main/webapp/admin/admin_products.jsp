@@ -175,8 +175,8 @@
         </div>
         
         <% if (message != null && !message.isEmpty()) { %>
-            <div class="message <%= messageType %>">
-                <%= message %>
+            <div class="message <%=htmlEscape(messageType)%>">
+                <%=htmlEscape(message)%>
             </div>
         <% } %>
 
@@ -225,8 +225,8 @@
                 %>
                     <tr>
                         <td><%=rs.getInt("product_id")%></td>
-                        <td><img src="../<%=rs.getString("main_image")%>" alt="<%=rs.getString("product_name")%>" class="product-image-thumb"></td>
-                        <td><%=rs.getString("product_name")%></td>
+                        <td><img src="../<%=htmlEscape(rs.getString("main_image"))%>" alt="<%=htmlEscape(rs.getString("product_name"))%>" class="product-image-thumb"></td>
+                        <td><%=htmlEscape(rs.getString("product_name"))%></td>
                         <td>NT$<%=rs.getBigDecimal("price")%></td>
                         <td><%=rs.getInt("stock")%></td>
                         <td><span class="status-badge <%=statusClass%>"><%=statusText%></span></td>
@@ -267,9 +267,10 @@
         
         function updateStatus(productId, newStatus) {
             if (confirm('確定要' + newStatus + '此商品嗎？')) {
-                window.location.href = 'admin_product_status_update.jsp?product_id=' + productId + '&status=' + newStatus;
+                submitStorePost('admin_product_status_update.jsp', { product_id: productId, status: newStatus });
             }
         }
     </script>
+    <script src="../post_action.js"></script>
 </body>
 </html> 

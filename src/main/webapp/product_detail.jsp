@@ -163,22 +163,22 @@
     <div class="main-container">
         <!-- 訊息顯示 -->
         <% if (message != null && !message.isEmpty()) { %>
-            <div class="alert alert-<%=messageType != null ? messageType : "info"%>">
-                <%=message%>
+            <div class="alert alert-<%=htmlEscape(messageType != null ? messageType : "info")%>">
+                <%=htmlEscape(message)%>
             </div>
         <% } %>
 
         <!-- 商品詳情區域 -->
         <section class="product-section">
             <div class="product-image">
-                <img src="<%=mainImage%>" alt="<%=productName%>" onerror="this.src='images/nba-logo.png';">
+                <img src="<%=htmlEscape(mainImage)%>" alt="<%=htmlEscape(productName)%>" onerror="this.src='images/nba-logo.png';">
                     <% if (isFeatured) { %>
                     <div class="featured-badge">精選商品</div>
                     <% } %>
             </div>
 
             <div class="product-info">
-                <h1><%=productName%></h1>
+                <h1><%=htmlEscape(productName)%></h1>
                 
                 <div class="price-section">
                     <strong>價格: NT$ <%=String.format("%,.0f", price)%></strong>
@@ -214,7 +214,7 @@
                     <% if (playerName != null && !playerName.isEmpty()) { %>
                         <div class="meta-item">
                             <span class="meta-label">球員:</span>
-                            <span class="meta-value"><%=playerName%></span>
+                            <span class="meta-value"><%=htmlEscape(playerName)%></span>
                         </div>
                     <% } %>
                     <% if (team != null && !team.isEmpty()) { %>
@@ -273,7 +273,7 @@
         <!-- 商品介紹 -->
         <section class="product-description">
             <h3>商品介紹</h3>
-            <p><%=description%></p>
+            <p><%=htmlEscape(description)%></p>
         </section>
 
         <!-- 評論區域 -->
@@ -443,9 +443,10 @@
             const quantity = quantityInput ? quantityInput.value : 1;
             
             if (confirm('確定要加入購物車嗎？')) {
-                window.location.href = 'add_to_cart.jsp?product_id=' + productId + '&quantity=' + quantity;
+                submitStorePost('add_to_cart.jsp', { product_id: productId, quantity });
             }
         }
     </script>
+    <script src="post_action.js"></script>
 </body>
 </html> 

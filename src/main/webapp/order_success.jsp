@@ -667,20 +667,20 @@
                 <h2 class="card-title">🚚 配送資訊</h2>
                 <div class="detail-row">
                     <span class="label">收件人</span>
-                    <span class="value"><%=shippingName%></span>
+                    <span class="value"><%=htmlEscape(shippingName)%></span>
                 </div>
                 <div class="detail-row">
                     <span class="label">聯絡電話</span>
-                    <span class="value"><%=shippingPhone%></span>
+                    <span class="value"><%=htmlEscape(shippingPhone)%></span>
                 </div>
                 <div class="detail-row">
                     <span class="label">配送地址</span>
-                    <span class="value"><%=shippingAddress%></span>
+                    <span class="value"><%=htmlEscape(shippingAddress)%></span>
                 </div>
                 <% if (orderNote != null && !orderNote.trim().isEmpty()) { %>
                 <div class="detail-row">
                     <span class="label">訂單備註</span>
-                    <span class="value"><%=orderNote%></span>
+                    <span class="value"><%=htmlEscape(orderNote)%></span>
                 </div>
                 <% } %>
             </div>

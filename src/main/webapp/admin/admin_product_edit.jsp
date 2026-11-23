@@ -118,7 +118,7 @@
             
             <div class="form-group">
                 <label for="product_name">商品名稱</label>
-                <input type="text" id="product_name" name="product_name" value="<%= rs.getString("product_name") %>" required>
+                <input type="text" id="product_name" name="product_name" value="<%=htmlEscape(rs.getString("product_name"))%>" required>
             </div>
             
             <div class="form-group">
@@ -141,7 +141,7 @@
             
             <div class="form-group">
                 <label for="description">商品描述</label>
-                <textarea id="description" name="description" required><%= rs.getString("description") != null ? rs.getString("description") : "" %></textarea>
+                <textarea id="description" name="description" required><%=htmlEscape(rs.getString("description") != null ? rs.getString("description") : "")%></textarea>
             </div>
             
             <div class="form-group">

@@ -806,7 +806,7 @@
                     <div class="avatar-edit-hint">點擊更換頭像</div>
                 </div>
                 <div class="member-info">
-                    <h1>歡迎回來，<%=memberName%>！</h1>
+                    <h1>歡迎回來，<%=htmlEscape(memberName)%>！</h1>
                     <p class="member-subtitle">感謝您對NBA卡包商城的支持</p>
                     <div class="member-stats">
                         <div class="stat-item">
@@ -904,9 +904,9 @@
                             boolean isSelected = mainImage.equals(avatar);
                     %>
                             <div class="avatar-option">
-                                <input type="radio" name="avatar" value="<%=mainImage%>" id="avatar-<%=productId%>" <%=isSelected ? "checked" : ""%>>
+                                <input type="radio" name="avatar" value="<%=htmlEscape(mainImage)%>" id="avatar-<%=productId%>" <%=isSelected ? "checked" : ""%>>
                                 <label for="avatar-<%=productId%>">
-                                    <img src="<%=mainImage%>" alt="<%=productName%>">
+                                    <img src="<%=htmlEscape(mainImage)%>" alt="<%=htmlEscape(productName)%>">
                                     <div class="avatar-label"><%=productName.length() > 15 ? productName.substring(0, 15) + "..." : productName%></div>
                                 </label>
                             </div>
@@ -965,7 +965,7 @@
                             <span class="order-date"><%=orderDate.length() > 16 ? orderDate.substring(0,16) : orderDate%></span>
                         </div>
                         <div class="order-details">
-                            <p><strong>收件人：</strong><%=shippingName%></p>
+                            <p><strong>收件人：</strong><%=htmlEscape(shippingName)%></p>
                             <p><strong>付款方式：</strong><%=paymentMethod%></p>
                             <p><strong>訂單金額：</strong>NT$ <%=String.format("%,.0f", finalAmount)%></p>
                             <p><strong>付款狀態：</strong><span class="status <%=paymentStatus%>"><%=paymentStatus%></span></p>
@@ -1010,7 +1010,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="display_name">使用者名稱</label>
-                            <input type="text" id="display_name" name="display_name" value="<%=memberName%>" readonly>
+                            <input type="text" id="display_name" name="display_name" value="<%=htmlEscape(memberName)%>" readonly>
                         </div>
                         <div class="form-group">
                             <label for="member_level">會員等級</label>

@@ -150,9 +150,9 @@
         %>
         <p><strong>訂單日期:</strong> <%= rso.getTimestamp("created_at") %></p>
         <p><strong>會員ID:</strong> <%= rso.getInt("member_id") %></p>
-        <p><strong>收件人:</strong> <%= rso.getString("shipping_name") %></p>
-        <p><strong>地址:</strong> <%= rso.getString("shipping_address") %></p>
-        <p><strong>電話:</strong> <%= rso.getString("shipping_phone") %></p>
+        <p><strong>收件人:</strong> <%=htmlEscape(rso.getString("shipping_name"))%></p>
+        <p><strong>地址:</strong> <%=htmlEscape(rso.getString("shipping_address"))%></p>
+        <p><strong>電話:</strong> <%=htmlEscape(rso.getString("shipping_phone"))%></p>
         <p><strong>訂單狀態:</strong> <%= rso.getString("order_status") %></p>
         <p><strong>付款狀態:</strong> <%= rso.getString("payment_status") %></p>
         <p><strong>商品總金額:</strong> NT$<%= rso.getBigDecimal("total_amount") %></p>
@@ -214,7 +214,7 @@
                     BigDecimal subtotal = price.multiply(new BigDecimal(qty));
         %>
             <tr>
-                <td><%= rsd.getString("product_name") %></td>
+                <td><%=htmlEscape(rsd.getString("product_name"))%></td>
                 <td><%= qty %></td>
                 <td>NT$<%= price %></td>
                 <td>NT$<%= subtotal %></td>

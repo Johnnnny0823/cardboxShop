@@ -344,7 +344,7 @@
         <!-- 訊息顯示 -->
         <% if (!message.isEmpty()) { %>
             <div class="alert alert-<%=messageType%>">
-                <%=message%>
+                <%=htmlEscape(message)%>
             </div>
         <% } %>
 
@@ -385,11 +385,11 @@
                     <% for (Map<String, Object> review : allReviews) { %>
                         <div class="review-item">
                             <div class="review-header">
-                                <img src="<%=review.get("productImage")%>" alt="<%=review.get("productName")%>" 
+                                <img src="<%=htmlEscape(review.get("productImage"))%>" alt="<%=htmlEscape(review.get("productName"))%>"
                                      class="product-image" onerror="this.src='images/nba-logo.png';">
                                 <div class="review-info">
-                                    <div class="product-name"><%=review.get("productName")%></div>
-                                    <div class="reviewer-name"><%=review.get("memberName")%></div>
+                                    <div class="product-name"><%=htmlEscape(review.get("productName"))%></div>
+                                    <div class="reviewer-name"><%=htmlEscape(review.get("memberName"))%></div>
                                     <div class="review-rating">
                                         <% 
                                         int rating = (Integer) review.get("rating");
@@ -405,7 +405,7 @@
                                     <div class="review-date"><%=review.get("date")%></div>
                                 </div>
                             </div>
-                            <div class="review-comment"><%=review.get("comment")%></div>
+                            <div class="review-comment"><%=htmlEscape(review.get("comment"))%></div>
                         </div>
                     <% } %>
                 <% } %>

@@ -1,0 +1,7 @@
+<%!
+    private static String htmlEscape(Object value) {
+        if (value == null) return "";
+        return String.valueOf(value).replace("&", "&amp;").replace("<", "&lt;")
+            .replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#39;");
+    }
+%>

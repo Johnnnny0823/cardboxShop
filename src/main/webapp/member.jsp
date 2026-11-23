@@ -11,6 +11,9 @@
         return "index.jsp";
     }
 %>
+<% if ("login".equals(request.getParameter("action")) || "register".equals(request.getParameter("action"))) { %>
+<%@ include file="WEB-INF/require_same_origin_post.jspf" %>
+<% } %>
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>

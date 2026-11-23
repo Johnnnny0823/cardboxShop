@@ -26,18 +26,6 @@
             
             // 獲取和更新網站統計數據
             try {
-                // 確保site_settings表存在
-                    pstmt = conn.prepareStatement(
-                        "CREATE TABLE IF NOT EXISTS site_settings (" +
-                        "setting_key VARCHAR(50) PRIMARY KEY, " +
-                        "setting_value TEXT, " +
-                        "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
-                        ")"
-                    );
-                    pstmt.executeUpdate();
-                    pstmt.close();
-                    
-                // 獲取當前訪問次數
                     pstmt = conn.prepareStatement("SELECT setting_value FROM site_settings WHERE setting_key = 'visit_count'");
                     rs = pstmt.executeQuery();
                     if (rs.next()) {

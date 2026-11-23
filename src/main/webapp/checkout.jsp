@@ -609,8 +609,8 @@
 
         <!-- 訊息顯示 -->
         <% if (message != null && !message.isEmpty()) { %>
-            <div class="alert alert-<%=messageType != null ? messageType : "info"%>">
-                <%=message%>
+            <div class="alert alert-<%=htmlEscape(messageType != null ? messageType : "info")%>">
+                <%=htmlEscape(message)%>
             </div>
         <% } %>
 
@@ -676,23 +676,23 @@
                         <div class="form-group">
                             <label for="shipping_name">收件人姓名 *</label>
                             <input type="text" id="shipping_name" name="shipping_name" 
-                                   value="<%=memberName != null ? memberName : ""%>" required>
+                                   value="<%=htmlEscape(memberName != null ? memberName : "")%>" required>
                         </div>
                             <div class="form-group">
                                 <label for="shipping_phone">聯絡電話 *</label>
                                 <input type="tel" id="shipping_phone" name="shipping_phone" 
-                                       value="<%=memberPhone%>" required pattern="[0-9\-\+\s]+">
+                                       value="<%=htmlEscape(memberPhone)%>" required pattern="[0-9\-\+\s]+">
                             </div>
                             </div>
                             <div class="form-group">
                                 <label for="shipping_email">電子郵件</label>
                                 <input type="email" id="shipping_email" name="shipping_email" 
-                                       value="<%=memberEmail%>">
+                                       value="<%=htmlEscape(memberEmail)%>">
                             </div>
                         <div class="form-group">
                             <label for="shipping_address">配送地址 *</label>
                             <textarea id="shipping_address" name="shipping_address" 
-                                      rows="3" required placeholder="請填寫完整地址，包含縣市、區域、街道、門牌號碼"><%=memberAddress%></textarea>
+                                      rows="3" required placeholder="請填寫完整地址，包含縣市、區域、街道、門牌號碼"><%=htmlEscape(memberAddress)%></textarea>
                         </div>
                     </section>
                         
@@ -781,9 +781,9 @@
                         itemCount += quantity;
                     %>
                         <div class="order-item">
-                            <img src="<%=mainImage%>" alt="<%=productName%>" class="item-image">
+                            <img src="<%=htmlEscape(mainImage)%>" alt="<%=htmlEscape(productName)%>" class="item-image">
                             <div class="item-details">
-                            <h4><%=productName%></h4>
+                            <h4><%=htmlEscape(productName)%></h4>
                             <p>NT$ <%=String.format("%.0f", price)%> × <%=quantity%></p>
                         </div>
                         <div class="item-total">NT$ <%=String.format("%.0f", itemTotal)%></div>

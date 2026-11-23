@@ -9,6 +9,10 @@
             <url-pattern>/update_images.jsp</url-pattern>
             <url-pattern>/update_to_reference_data.jsp</url-pattern>
             <url-pattern>/db_status.jsp</url-pattern>
+            <url-pattern>/dbConnection.jsp</url-pattern>
+            <url-pattern>/test_db.jsp</url-pattern>
+            <url-pattern>/page_template.jsp</url-pattern>
+            <url-pattern>/page_meta.jsp</url-pattern>
         </web-resource-collection>
         <auth-constraint/>
     </security-constraint>

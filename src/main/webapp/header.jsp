@@ -40,7 +40,7 @@
                     <div class="member-dropdown">
                         <a href="<%=pathPrefix%>member_area.jsp" class="member-info">
                             <img src="<%=memberIconPath%>" alt="會員圖示" onerror="this.style.display='none'">
-                            <span><%=headerMemberName != null ? headerMemberName : "會員"%></span>
+                            <span><%=headerMemberName != null ? headerMemberName.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") : "會員"%></span>
                         </a>
                         <div class="dropdown-menu">
                             <a href="<%=pathPrefix%>member_area.jsp">會員專區</a>
@@ -161,4 +161,4 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById("searchInput").value = lastSearch;
     }
 });
-</script> 
+</script>

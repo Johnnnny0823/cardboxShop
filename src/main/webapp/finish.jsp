@@ -529,7 +529,7 @@
                 <h2 class="card-title">🚚 配送資訊</h2>
                 <div class="detail-row">
                     <span class="label">收件人</span>
-                    <span class="value"><%=memberName%></span>
+                    <span class="value"><%=htmlEscape(memberName)%></span>
                 </div>
                 <div class="detail-row">
                     <span class="label">預計送達</span>

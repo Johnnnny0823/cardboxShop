@@ -1,0 +1,26 @@
+<%
+    if (!"POST".equals(request.getMethod())) {
+        response.setHeader("Allow", "POST");
+        response.sendError(405);
+        return;
+    }
+    String mutationOrigin = request.getHeader("Origin");
+    String mutationReferer = request.getHeader("Referer");
+    try {
+        boolean standardPort = ("https".equals(request.getScheme()) && request.getServerPort() == 443)
+            || ("http".equals(request.getScheme()) && request.getServerPort() == 80);
+        java.net.URI expected = new java.net.URI(request.getScheme(), null, request.getServerName(),
+            standardPort ? -1 : request.getServerPort(), null, null, null);
+        java.net.URI source = new java.net.URI(mutationOrigin != null ? mutationOrigin
+            : mutationReferer != null ? mutationReferer : "");
+        java.net.URI sourceOrigin = new java.net.URI(source.getScheme(), null, source.getHost(),
+            source.getPort(), null, null, null);
+        if (!expected.equals(sourceOrigin) || source.getUserInfo() != null) {
+            response.sendError(403);
+            return;
+        }
+    } catch (java.net.URISyntaxException error) {
+        response.sendError(403);
+        return;
+    }
+%>

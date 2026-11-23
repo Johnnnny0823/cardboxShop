@@ -1,4 +1,5 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ include file="../WEB-INF/require_same_origin_post.jspf" %>
 <%@ include file="../dbConnection.jsp" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.math.BigDecimal" %>

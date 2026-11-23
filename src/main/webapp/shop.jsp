@@ -2,6 +2,9 @@
 <%@ include file="dbConnection.jsp" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
+<% if ("add_to_cart".equals(request.getParameter("action"))) { %>
+<%@ include file="WEB-INF/require_same_origin_post.jspf" %>
+<% } %>
 
 <%
     // 檢查會員登入狀態
@@ -507,4 +510,4 @@
     <!-- 引入統一的footer -->
     <%@ include file="footer.jsp" %>
 </body>
-</html> 
+</html>

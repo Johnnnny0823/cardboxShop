@@ -429,8 +429,8 @@
 
         <!-- 訊息顯示 -->
         <% if (message != null && !message.isEmpty()) { %>
-            <div class="alert alert-<%=messageType != null ? messageType : "info"%>">
-                <%=message%>
+            <div class="alert alert-<%=htmlEscape(messageType != null ? messageType : "info")%>">
+                <%=htmlEscape(message)%>
             </div>
         <% } %>
 
@@ -625,7 +625,7 @@
     <script>
         function addToCart(productId) {
             if (confirm('確定要收藏這件特別商品嗎？')) {
-                window.location.href = 'add_to_cart.jsp?product_id=' + productId + '&quantity=1';
+                submitStorePost('add_to_cart.jsp', { product_id: productId, quantity: 1 });
             }
         }
 
@@ -643,5 +643,6 @@
             });
         });
     </script>
+    <script src="post_action.js"></script>
 </body>
 </html> 

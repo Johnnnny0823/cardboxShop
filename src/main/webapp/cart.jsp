@@ -709,7 +709,7 @@
         <!-- 訊息顯示 -->
         <% if (message != null && !message.trim().isEmpty()) { %>
             <div class="alert alert-<%=messageType%>" id="messageAlert">
-                <%= message %>
+                <%=htmlEscape(message)%>
                 <button type="button" class="alert-close" onclick="closeAlert()">×</button>
             </div>
         <% } %>
@@ -759,15 +759,15 @@
                     <% for (Map<String, Object> item : cartItems) { %>
                         <div class="cart-item">
                             <img src="<%= item.get("imageUrl") != null ? item.get("imageUrl") : "images/default_product.jpg" %>" 
-                                 alt="<%= item.get("productName") %>" 
+                                 alt="<%=htmlEscape(item.get("productName"))%>"
                                  class="item-image"
                                  onerror="this.src='images/default_product.jpg'">
                             
                             <div class="item-info">
-                                <div class="item-name"><%= item.get("productName") %></div>
+                                <div class="item-name"><%=htmlEscape(item.get("productName"))%></div>
                                 <div class="item-details">
                                     <% if (item.get("playerName") != null) { %>
-                                        <span class="detail-tag">🏀 <%= item.get("playerName") %></span>
+                                        <span class="detail-tag">🏀 <%=htmlEscape(item.get("playerName"))%></span>
                                     <% } %>
                                     <% if (item.get("team") != null) { %>
                                         <span class="detail-tag">🏟️ <%= item.get("team") %></span>

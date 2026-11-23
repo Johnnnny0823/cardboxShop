@@ -493,8 +493,8 @@
 
         <!-- 訊息顯示 -->
         <% if (message != null && !message.isEmpty()) { %>
-            <div class="alert alert-<%=messageType != null ? messageType : "info"%>">
-                <%=message%>
+            <div class="alert alert-<%=htmlEscape(messageType != null ? messageType : "info")%>">
+                <%=htmlEscape(message)%>
             </div>
         <% } %>
 
@@ -576,11 +576,11 @@
                         
                         <div class="category-badge">球員卡</div>
                         
-                        <img src="<%=product.get("image")%>" alt="<%=product.get("name")%>" onerror="handleImageError(this, '<%=product.get("name")%>')">
+                        <img src="<%=htmlEscape(product.get("image"))%>" alt="<%=htmlEscape(product.get("name"))%>" onerror="handleImageError(this, this.alt)">
                         
                         <div class="card-info">
                             <div class="rarity-badge rarity-<%=product.get("rarity")%>"><%=product.get("rarity")%></div>
-                            <h3><%=product.get("name")%></h3>
+                            <h3><%=htmlEscape(product.get("name"))%></h3>
                             <div class="player-name">球員：<%=product.get("player")%></div>
                             <div class="price">NT$ <%=String.format("%,.0f", (Double)product.get("price"))%></div>
                             <div class="stock <%=(Integer)product.get("stock") <= 5 ? (((Integer)product.get("stock") > 0) ? "low-stock" : "out-of-stock") : "in-stock"%>">
@@ -679,7 +679,7 @@
 
         function addToCart(productId) {
             if (confirm('確定要加入購物車嗎？')) {
-                window.location.href = 'add_to_cart.jsp?product_id=' + productId + '&quantity=1';
+                submitStorePost('add_to_cart.jsp', { product_id: productId, quantity: 1 });
             }
         }
 
@@ -759,5 +759,6 @@
             initializeCards();
         });
     </script>
+    <script src="post_action.js"></script>
 </body>
 </html> 

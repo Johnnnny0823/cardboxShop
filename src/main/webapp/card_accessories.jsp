@@ -422,8 +422,8 @@
 
         <!-- 訊息顯示 -->
         <% if (message != null && !message.isEmpty()) { %>
-            <div class="alert alert-<%=messageType != null ? messageType : "info"%>">
-                <%=message%>
+            <div class="alert alert-<%=htmlEscape(messageType != null ? messageType : "info")%>">
+                <%=htmlEscape(message)%>
             </div>
         <% } %>
 
@@ -492,11 +492,11 @@
                     
                     <div class="category-badge">周邊</div>
                     
-                    <img src="<%=mainImage%>" alt="<%=productName%>" onerror="this.src='images/default_accessory.jpg'">
+                    <img src="<%=htmlEscape(mainImage)%>" alt="<%=htmlEscape(productName)%>" onerror="this.src='images/default_accessory.jpg'">
                     
                     <div class="card-info">
-                        <h3><%=productName%></h3>
-                        <div class="product-description"><%=description != null ? description : "精美NBA卡片周邊配件，收藏愛好者必備"%></div>
+                        <h3><%=htmlEscape(productName)%></h3>
+                        <div class="product-description"><%=htmlEscape(description != null ? description : "精美NBA卡片周邊配件，收藏愛好者必備")%></div>
                         <div class="price">NT$ <%=String.format("%,.0f", price)%></div>
                         <div class="stock <%=stock <= 5 ? (stock > 0 ? "low-stock" : "out-of-stock") : "in-stock"%>">
                             <% if (stock > 10) { %>
@@ -616,7 +616,7 @@
     <script>
         function addToCart(productId) {
             if (confirm('確定要加入購物車嗎？')) {
-                window.location.href = 'add_to_cart.jsp?product_id=' + productId + '&quantity=1';
+                submitStorePost('add_to_cart.jsp', { product_id: productId, quantity: 1 });
             }
         }
 
@@ -634,5 +634,6 @@
             });
         });
     </script>
+    <script src="post_action.js"></script>
 </body>
 </html> 

@@ -2,6 +2,9 @@
 <%@ include file="dbConnection.jsp" %>
 <%@ include file="/WEB-INF/member_password.jspf" %>
 <%@ page import="java.sql.*" %>
+<% if ("register".equals(request.getParameter("action"))) { %>
+<%@ include file="WEB-INF/require_same_origin_post.jspf" %>
+<% } %>
 
 <%
     String message = "";

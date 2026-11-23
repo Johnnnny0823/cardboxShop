@@ -2,13 +2,9 @@
 <%@page isErrorPage="true" %>
 <%
     String errorCode = request.getParameter("code");
-    String errorMessage = request.getParameter("message");
-    String errorType = request.getParameter("type");
     
     // 預設錯誤資訊
-    if (errorCode == null) errorCode = "500";
-    if (errorMessage == null) errorMessage = "系統發生未知錯誤";
-    if (errorType == null) errorType = "system";
+    if (!java.util.Arrays.asList("400", "403", "404", "500", "db").contains(errorCode)) errorCode = "500";
     
     // 根據錯誤代碼設定詳細資訊
     String errorTitle = "";
@@ -38,7 +34,7 @@
             break;
         default:
             errorTitle = "系統錯誤";
-            errorDescription = errorMessage;
+            errorDescription = errorTitle;
             suggestion = "請稍後再試或聯繫客服";
             break;
     }
@@ -170,15 +166,7 @@
                 </div>
                 
                 <!-- 錯誤詳情（僅開發模式顯示） -->
-                <% if (exception != null && "development".equals(application.getInitParameter("mode"))) { %>
-                    <details style="margin-top: 30px; text-align: left;">
-                        <summary style="cursor: pointer; color: #666;">技術詳情</summary>
-                        <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; overflow: auto; font-size: 12px;">
-錯誤類型: <%=exception.getClass().getName()%>
-錯誤訊息: <%=exception.getMessage()%>
-                        </pre>
-                    </details>
-                <% } %>
+
             </div>
         </div>
     </div>
@@ -187,54 +175,5 @@
     <%@ include file="footer.jsp" %>
     
     <!-- 將錯誤代碼傳遞給JavaScript -->
-    <script type="text/javascript">
-        window.errorCode = '<%=errorCode%>';
-        window.errorMessage = '<%=errorMessage%>';
-    </script>
-    
-    <script>
-        // 自動重試機制（針對資料庫錯誤）
-        if (window.errorCode === 'db') {
-            var retryCount = 0;
-            var maxRetries = 3;
-            
-            function autoRetry() {
-                if (retryCount < maxRetries) {
-                    retryCount++;
-                    setTimeout(function() {
-                        window.location.reload();
-                    }, 5000 * retryCount); // 遞增延遲
-                }
-            }
-            
-            // 5秒後開始自動重試
-            setTimeout(autoRetry, 5000);
-        }
-        
-        // 錯誤報告（可選）
-        function reportError() {
-            var errorData = {
-                code: window.errorCode,
-                message: window.errorMessage,
-                url: window.location.href,
-                userAgent: navigator.userAgent,
-                timestamp: new Date().toISOString()
-            };
-            
-            // 發送錯誤報告到後端（實現可選）
-            fetch('report_error.jsp', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(errorData)
-            }).catch(function() {
-                // 忽略報告錯誤
-            });
-        }
-        
-        // 頁面載入完成後發送錯誤報告
-        document.addEventListener('DOMContentLoaded', reportError);
-    </script>
 </body>
 </html> 

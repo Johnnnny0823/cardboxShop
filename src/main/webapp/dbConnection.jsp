@@ -1,4 +1,5 @@
 <%@ page import="java.sql.*" %>
+<%@ include file="WEB-INF/html_escape.jspf" %>
 <%!
     // 資料庫連接參數
     private static final String DB_URL = System.getenv("NBA_DB_URL");
@@ -162,4 +163,4 @@
             }
         }
     }
-%> 
+%>

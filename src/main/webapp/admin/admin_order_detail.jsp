@@ -1,5 +1,6 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/require_admin.jspf" %>
+<%@ include file="/WEB-INF/admin_csrf.jspf" %>
 <%@ include file="../dbConnection.jsp" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.math.BigDecimal" %>
@@ -163,6 +164,7 @@
         <!-- 訂單狀態更新表單 -->
         <h3 style="margin-top: 30px;">更新訂單狀態</h3>
         <form action="admin_order_status_update.jsp" method="post" class="status-form">
+            <input type="hidden" name="csrf_token" value="<%=adminCsrfToken(session)%>">
             <input type="hidden" name="order_id" value="<%= orderId %>">
             <div style="display: flex; align-items: center; gap: 10px;">
                 <label for="orderStatus">選擇新狀態:</label>
@@ -179,6 +181,7 @@
         <!-- 付款狀態更新表單 -->
         <h3>更新付款狀態</h3>
         <form action="admin_payment_status_update.jsp" method="post" class="status-form">
+            <input type="hidden" name="csrf_token" value="<%=adminCsrfToken(session)%>">
             <input type="hidden" name="order_id" value="<%= orderId %>">
             <div style="display: flex; align-items: center; gap: 10px;">
                 <label for="paymentStatus">選擇付款狀態:</label>

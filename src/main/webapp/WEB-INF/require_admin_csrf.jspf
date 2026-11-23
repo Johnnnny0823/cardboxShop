@@ -1,0 +1,10 @@
+<%@ include file="/WEB-INF/require_admin.jspf" %>
+<%@ include file="/WEB-INF/admin_csrf.jspf" %>
+<%
+    String[] adminCsrfValues = request.getParameterValues("csrf_token");
+    if (adminCsrfValues == null || adminCsrfValues.length != 1
+            || !validAdminCsrf(session, adminCsrfValues[0])) {
+        response.sendError(403);
+        return;
+    }
+%>

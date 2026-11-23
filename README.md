@@ -45,7 +45,7 @@
 
 ## 執行設定
 
-需要 Java、支援 JSP 的伺服器（例如 Apache Tomcat）、MySQL 和 MySQL Connector/J。資料庫匯出自 MySQL 8.4.0，原使用的 Java、Tomcat 與 JDBC 驅動版本尚未確認。此備份未包含伺服器、JDBC JAR 或建置設定。
+需要 Java、支援 `javax.servlet` 的 JSP 伺服器（例如 Apache Tomcat 9）、MySQL 和 MySQL Connector/J。商品圖片表單另需 Apache Commons FileUpload 1.6.0 與 Commons IO 2.19.0，請放入應用程式的 `WEB-INF/lib`。此備份未包含伺服器、JAR 或建置設定。
 
 1. 在專用的本機 MySQL 測試環境匯入 SQL。它會建立 `nba_db`，且包含 `DROP TABLE IF EXISTS`，不要對現有重要資料庫直接執行。
 2. 在啟動 Tomcat 的環境設定下列變數：
@@ -63,13 +63,13 @@
 
 ## 資安防護
 
-- **跨站請求及網頁輸出**：購物車新增、評論、結帳與指定會員和後台寫入入口要求同源 POST。商品、評論及訂單中的指定文字欄位經 HTML 跳脫。直接存取診斷頁與未使用的動態模板會遭拒，首頁執行期移除了建表動作。
+- **跨站請求及網頁輸出**：購物車、評論及結帳等寫入入口要求同源 POST。後台商品、訂單與付款表單另外驗證管理員身分及工作階段專用的 CSRF token。移除接受自訂 JavaScript、CSS 或 JSP include 路徑的舊模板，Servlet 設定也封鎖舊網址。
 
-- **註冊與修改密碼**使用加鹽 PBKDF2-HMAC-SHA256（600,000 次迭代）。既有明文密碼在成功登入後轉成雜湊，更新時會核對舊值，避免覆寫其他請求剛修改的密碼。
+- **註冊與修改密碼**使用加鹽 PBKDF2-HMAC-SHA256（600,000 次迭代）。登入只接受有效雜湊。舊明文帳號需經身分核對後重設密碼。既有安裝可由管理者備妥帳號復原流程，再執行[舊密碼停用 SQL](src/main/sql/disable_legacy_passwords.sql) 清除不合格式的儲存值。新匯入的展示資料沒有歷史會員密碼。
 - **登入成功後**重發 Session ID，Session Cookie 使用 `HttpOnly`，登入後只允許轉往指定商城頁面。
 - **訂單清單及詳情**只開放管理員。封鎖會匯入、清理及批次更新資料的維護頁。公開狀態頁只回報整體可用性。
 
-已在隔離的 Tomcat 與 MySQL 驗證註冊、修改密碼、舊密碼升級和 Session ID 更新。匿名與一般會員會被訂單管理頁拒絕，管理員可讀取訂單清單。既有部署中仍以明文儲存的帳號應重設密碼，正式環境的結帳與完整後台操作仍需驗收。見 [密碼處理](src/main/webapp/WEB-INF/member_password.jspf)、[管理員檢查](src/main/webapp/WEB-INF/require_admin.jspf)、[Servlet 設定](src/main/webapp/WEB-INF/web.xml)。
+審查入口包括 [密碼處理](src/main/webapp/WEB-INF/member_password.jspf)、[後台 CSRF 檢查](src/main/webapp/WEB-INF/require_admin_csrf.jspf)、[商品狀態寫入](src/main/webapp/admin/admin_product_status_update.jsp) 和 [Servlet 設定](src/main/webapp/WEB-INF/web.xml)。
 
 ## 備份範圍
 
@@ -78,4 +78,4 @@
 - 保留全部資料表結構與商品等展示資料，移除歷史會員、購物車、訂單、積分、留言、評論及相關紀錄，另移除歷史站台設定與統計資料。
 - 原始本機檔案未被覆寫。
 
-這是課程專案的原始碼備份，已在本機驗證商品頁、會員註冊與登入，以及商品評論流程。會員密碼處理、管理員權限與資料庫診斷及維護頁面沿用舊實作；正式對外部署前需另行檢查。
+這是課程專案的原始碼備份。商品頁、會員註冊與登入及商品評論均曾在本機展示環境驗證，正式結帳與完整後台操作仍待驗收。

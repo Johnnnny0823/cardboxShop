@@ -1,4 +1,5 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/admin_csrf.jspf" %>
 <%@ include file="../dbConnection.jsp" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.math.BigDecimal" %>
@@ -114,6 +115,7 @@
                 if (rs.next()) {
         %>
         <form action="admin_product_update.jsp" method="post">
+            <input type="hidden" name="csrf_token" value="<%=adminCsrfToken(session)%>">
             <input type="hidden" name="product_id" value="<%= rs.getInt("product_id") %>">
             
             <div class="form-group">

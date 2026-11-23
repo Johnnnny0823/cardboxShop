@@ -1,4 +1,5 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/admin_csrf.jspf" %>
 <%@ include file="../dbConnection.jsp" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.math.BigDecimal" %>
@@ -132,6 +133,7 @@
         <h2>新增商品</h2>
         
         <form action="admin_product_add_process.jsp" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<%=adminCsrfToken(session)%>">
             <div class="form-row">
                 <div class="form-group">
                     <label for="category_id">商品分類</label>

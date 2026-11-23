@@ -1,5 +1,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ include file="../WEB-INF/require_same_origin_post.jspf" %>
+<%@ include file="/WEB-INF/require_admin.jspf" %>
+<%@ include file="/WEB-INF/admin_csrf.jspf" %>
 <%@ include file="../dbConnection.jsp" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.math.BigDecimal" %>
@@ -7,34 +9,41 @@
 <%@ page import="org.apache.commons.fileupload.*, org.apache.commons.fileupload.disk.*, org.apache.commons.fileupload.servlet.*" %>
 
 <%
-    // 權限檢查：只有管理員才能訪問此頁面
-    String memberLevel = (String) session.getAttribute("memberLevel");
-    if (memberLevel == null || !"管理員".equals(memberLevel)) {
-        response.sendRedirect("../index.jsp");
-        return;
-    }
-
     Connection conn = null;
     PreparedStatement pstmt = null;
+    List<FileItem> items = Collections.emptyList();
     String message = "";
     String messageType = "error";
 
     try {
-        // 設定上傳目錄
+        // 設定表單解析器及上傳大小限制
+        DiskFileItemFactory factory = new DiskFileItemFactory();
+        ServletFileUpload upload = new ServletFileUpload(factory);
+        upload.setSizeMax(10 * 1024 * 1024); // 限制檔案大小為 10MB
+        upload.setFileCountMax(20);
+
+        // 解析請求
+        items = upload.parseRequest(request);
+        String csrf = null;
+        for (FileItem item : items) {
+            if (item.isFormField() && "csrf_token".equals(item.getFieldName())) {
+                if (csrf != null) {
+                    response.sendError(403);
+                    return;
+                }
+                csrf = item.getString("UTF-8");
+            }
+        }
+        if (!validAdminCsrf(session, csrf)) {
+            response.sendError(403);
+            return;
+        }
+
         String uploadPath = application.getRealPath("/") + "images/products";
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
-
-        // 設定檔案上傳處理器
-        DiskFileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
-        upload.setSizeMax(10 * 1024 * 1024); // 限制檔案大小為 10MB
-
-        // 解析請求
-        List<FileItem> items = upload.parseRequest(request);
-        
         // 初始化變數
         String productName = "";
         BigDecimal price = null;
@@ -125,9 +134,10 @@
         message = "新增商品時發生錯誤: " + e.getMessage();
         e.printStackTrace();
     } finally {
+        for (FileItem item : items) item.delete();
         closeResources(conn, pstmt, null);
     }
 
     // 重定向回商品列表頁面，並帶上訊息
     response.sendRedirect("admin_products.jsp?msg=" + java.net.URLEncoder.encode(message, "UTF-8") + "&msgType=" + messageType);
-%> 
+%>

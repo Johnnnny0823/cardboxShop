@@ -4,6 +4,7 @@
         response.sendError(405);
         return;
     }
+    request.setCharacterEncoding("UTF-8");
     String mutationOrigin = request.getHeader("Origin");
     String mutationReferer = request.getHeader("Referer");
     try {

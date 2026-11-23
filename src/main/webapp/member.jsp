@@ -56,20 +56,8 @@
                 rs = pstmt.executeQuery();
                 
                 if (rs.next() && verifyPassword(password.trim(), rs.getString("password"))) {
-                    String stored = rs.getString("password");
-                    if (!stored.startsWith(PASSWORD_PREFIX)) {
-                        try (PreparedStatement upgrade = conn.prepareStatement(
-                                "UPDATE member SET password = ? WHERE member_id = ? AND BINARY password = BINARY ?")) {
-                            upgrade.setString(1, hashPassword(password.trim()));
-                            upgrade.setInt(2, rs.getInt("member_id"));
-                            upgrade.setString(3, stored);
-                            if (upgrade.executeUpdate() != 1) {
-                                response.sendRedirect("member.jsp");
-                                return;
-                            }
-                        }
-                    }
                     request.changeSessionId();
+                    session.removeAttribute("adminCsrfToken");
                     // 登入成功
                     session.setAttribute("memberId", rs.getInt("member_id"));
                     session.setAttribute("memberName", rs.getString("username"));

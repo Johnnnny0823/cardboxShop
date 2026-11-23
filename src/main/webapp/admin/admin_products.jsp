@@ -1,4 +1,5 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/admin_csrf.jspf" %>
 <%@ include file="../dbConnection.jsp" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.math.BigDecimal" %>
@@ -267,7 +268,7 @@
         
         function updateStatus(productId, newStatus) {
             if (confirm('確定要' + newStatus + '此商品嗎？')) {
-                submitStorePost('admin_product_status_update.jsp', { product_id: productId, status: newStatus });
+                submitStorePost('admin_product_status_update.jsp', { product_id: productId, status: newStatus, csrf_token: '<%=adminCsrfToken(session)%>' });
             }
         }
     </script>

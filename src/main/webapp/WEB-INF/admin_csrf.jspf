@@ -1,0 +1,23 @@
+<%!
+    private static final java.security.SecureRandom CSRF_RANDOM = new java.security.SecureRandom();
+
+    private String adminCsrfToken(javax.servlet.http.HttpSession session) {
+        synchronized (session) {
+            Object existing = session.getAttribute("adminCsrfToken");
+            if (existing instanceof String) return (String) existing;
+            byte[] random = new byte[32];
+            CSRF_RANDOM.nextBytes(random);
+            String token = java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(random);
+            session.setAttribute("adminCsrfToken", token);
+            return token;
+        }
+    }
+
+    private boolean validAdminCsrf(javax.servlet.http.HttpSession session, String supplied) {
+        Object expected = session.getAttribute("adminCsrfToken");
+        if (!(expected instanceof String) || supplied == null || supplied.length() != 43) return false;
+        return java.security.MessageDigest.isEqual(
+            ((String) expected).getBytes(java.nio.charset.StandardCharsets.US_ASCII),
+            supplied.getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+    }
+%>

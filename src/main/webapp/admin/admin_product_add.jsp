@@ -238,7 +238,7 @@
             
             <div class="form-group">
                 <label for="productImage">商品圖片</label>
-                <input type="file" id="productImage" name="productImage" accept="image/*" required 
+                <input type="file" id="productImage" name="productImage" accept=".jpg,.jpeg,.png,image/jpeg,image/png" required 
                        onchange="previewImage(this)">
                 <div class="image-preview-container">
                     <img id="imagePreview" class="preview-image" alt="預覽圖片">

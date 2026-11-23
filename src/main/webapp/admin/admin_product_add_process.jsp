@@ -2,6 +2,7 @@
 <%@ include file="../WEB-INF/require_same_origin_post.jspf" %>
 <%@ include file="/WEB-INF/require_admin.jspf" %>
 <%@ include file="/WEB-INF/admin_csrf.jspf" %>
+<%@ include file="/WEB-INF/image_upload.jspf" %>
 <%@ include file="../dbConnection.jsp" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.math.BigDecimal" %>
@@ -83,10 +84,15 @@
             } else {
                 // 處理檔案上傳
                 if (item.getFieldName().equals("productImage") && item.getSize() > 0) {
-                    String fileName = new File(item.getName()).getName();
-                    // 生成唯一檔名
-                    String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-                    File uploadedFile = new File(uploadPath + File.separator + uniqueFileName);
+                    // 只接受實際內容為 JPEG/PNG 的圖片；檔名與副檔名由伺服器決定，不沿用使用者提供的檔名
+                    String extension = detectImageExtension(item.get());
+                    if (extension == null) {
+                        message = "商品圖片只接受 JPG 或 PNG 格式（長寬各不超過 8000 像素）";
+                        response.sendRedirect("admin_product_add.jsp?msg=" + java.net.URLEncoder.encode(message, "UTF-8") + "&msgType=" + messageType);
+                        return;
+                    }
+                    String uniqueFileName = UUID.randomUUID().toString() + extension;
+                    File uploadedFile = new File(uploadDir, uniqueFileName);
                     item.write(uploadedFile);
                     mainImage = "images/products/" + uniqueFileName;
                 }

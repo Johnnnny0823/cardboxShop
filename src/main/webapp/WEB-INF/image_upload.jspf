@@ -1,0 +1,43 @@
+<%!
+    private static final int IMAGE_MAX_DIMENSION = 8000;
+
+    /**
+     * Returns ".jpg" or ".png" when the bytes are a decodable JPEG/PNG within size limits,
+     * otherwise null. The client-supplied file name and content type are never trusted.
+     */
+    private String detectImageExtension(byte[] data) {
+        if (data == null || data.length < 8) return null;
+        String format;
+        String extension;
+        if ((data[0] & 0xFF) == 0xFF && (data[1] & 0xFF) == 0xD8 && (data[2] & 0xFF) == 0xFF) {
+            format = "jpeg";
+            extension = ".jpg";
+        } else if ((data[0] & 0xFF) == 0x89 && data[1] == 'P' && data[2] == 'N' && data[3] == 'G'
+                && data[4] == 0x0D && data[5] == 0x0A && data[6] == 0x1A && data[7] == 0x0A) {
+            format = "png";
+            extension = ".png";
+        } else {
+            return null;
+        }
+        javax.imageio.stream.ImageInputStream input = null;
+        javax.imageio.ImageReader reader = null;
+        try {
+            input = javax.imageio.ImageIO.createImageInputStream(new java.io.ByteArrayInputStream(data));
+            java.util.Iterator<javax.imageio.ImageReader> readers = javax.imageio.ImageIO.getImageReadersByFormatName(format);
+            if (input == null || !readers.hasNext()) return null;
+            reader = readers.next();
+            reader.setInput(input, true, true);
+            int width = reader.getWidth(0);
+            int height = reader.getHeight(0);
+            if (width < 1 || height < 1 || width > IMAGE_MAX_DIMENSION || height > IMAGE_MAX_DIMENSION) return null;
+            return reader.read(0) != null ? extension : null;
+        } catch (java.io.IOException | RuntimeException error) {
+            return null;
+        } finally {
+            if (reader != null) reader.dispose();
+            if (input != null) {
+                try { input.close(); } catch (java.io.IOException ignored) { }
+            }
+        }
+    }
+%>

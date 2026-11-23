@@ -16,6 +16,12 @@
         </web-resource-collection>
         <auth-constraint/>
     </security-constraint>
+    <!-- Uploaded files live under /images/: serve them only as static content, never run them as JSP.
+         Path mappings take precedence over Tomcat's *.jsp extension mapping. -->
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/images/*</url-pattern>
+    </servlet-mapping>
     <session-config>
         <cookie-config>
             <http-only>true</http-only>

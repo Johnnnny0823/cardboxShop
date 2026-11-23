@@ -1,0 +1,9 @@
+<%@ page pageEncoding="UTF-8" %>
+<%
+    if (session.getAttribute("memberId") == null
+            || !"管理員".equals(session.getAttribute("memberLevel"))) {
+        response.sendError(403);
+        return;
+    }
+    response.setHeader("Cache-Control", "no-store");
+%>

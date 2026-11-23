@@ -1,4 +1,5 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/require_admin.jspf" %>
 <%@ include file="../dbConnection.jsp" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.math.BigDecimal" %>
@@ -257,4 +258,4 @@
         <p><a href="admin_order_list.jsp" class="back-link">← 返回訂單列表</a></p>
     </main>
 </body>
-</html> 
+</html>

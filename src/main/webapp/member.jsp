@@ -1,6 +1,16 @@
 ﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%@ include file="dbConnection.jsp" %>
+<%@ include file="/WEB-INF/member_password.jspf" %>
+<%!
+    private String loginDestination(String target) {
+        if (target != null && target.matches(
+                "(?:card|card_box|card_accessories|special|cart|checkout)\\.jsp|product_detail\\.jsp\\?id=[0-9]+|search_results\\.jsp\\?query=[a-zA-Z0-9._*+%~-]+")) {
+            return target;
+        }
+        return "index.jsp";
+    }
+%>
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -29,20 +39,34 @@
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         
-        if (username != null && password != null && !username.trim().isEmpty() && !password.trim().isEmpty()) {
+        if (username != null && password != null && !username.trim().isEmpty()
+                && !password.trim().isEmpty() && password.length() <= 1024) {
             Connection conn = null;
             PreparedStatement pstmt = null;
             ResultSet rs = null;
             
             try {
                 conn = getConnection();
-                String sql = "SELECT member_id, username, email, member_level FROM member WHERE username = ? AND password = ?";
+                String sql = "SELECT member_id, username, email, member_level, password FROM member WHERE username = ?";
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setString(1, username.trim());
-                pstmt.setString(2, password.trim());
                 rs = pstmt.executeQuery();
                 
-                if (rs.next()) {
+                if (rs.next() && verifyPassword(password.trim(), rs.getString("password"))) {
+                    String stored = rs.getString("password");
+                    if (!stored.startsWith(PASSWORD_PREFIX)) {
+                        try (PreparedStatement upgrade = conn.prepareStatement(
+                                "UPDATE member SET password = ? WHERE member_id = ? AND BINARY password = BINARY ?")) {
+                            upgrade.setString(1, hashPassword(password.trim()));
+                            upgrade.setInt(2, rs.getInt("member_id"));
+                            upgrade.setString(3, stored);
+                            if (upgrade.executeUpdate() != 1) {
+                                response.sendRedirect("member.jsp");
+                                return;
+                            }
+                        }
+                    }
+                    request.changeSessionId();
                     // 登入成功
                     session.setAttribute("memberId", rs.getInt("member_id"));
                     session.setAttribute("memberName", rs.getString("username"));
@@ -55,12 +79,7 @@
                         response.sendRedirect("admin/admin_panel.jsp");
                     } else {
                         // 檢查是否有重定向頁面
-                        String redirectPage = request.getParameter("redirect");
-                        if (redirectPage != null && !redirectPage.isEmpty()) {
-                            response.sendRedirect(redirectPage);
-                        } else {
-                            response.sendRedirect("index.jsp");
-                        }
+                        response.sendRedirect(loginDestination(request.getParameter("redirect")));
                     }
                     return;
                 } else {
@@ -89,7 +108,8 @@
         String address = request.getParameter("reg_address");
         
         if (username != null && password != null && email != null && 
-            !username.trim().isEmpty() && !password.trim().isEmpty() && !email.trim().isEmpty()) {
+            !username.trim().isEmpty() && !password.trim().isEmpty()
+            && password.length() <= 1024 && !email.trim().isEmpty()) {
             
             Connection conn = null;
             PreparedStatement pstmt = null;
@@ -116,7 +136,7 @@
                     String insertSql = "INSERT INTO member (username, password, email, phone, address, member_level) VALUES (?, ?, ?, ?, ?, '一般會員')";
                     pstmt = conn.prepareStatement(insertSql);
                     pstmt.setString(1, username.trim());
-                    pstmt.setString(2, password.trim());
+                    pstmt.setString(2, hashPassword(password.trim()));
                     pstmt.setString(3, email.trim());
                     pstmt.setString(4, phone != null ? phone.trim() : "");
                     pstmt.setString(5, address != null ? address.trim() : "");
@@ -205,7 +225,7 @@
                 <% if (dbAvailable) { %>
                     <form action="member.jsp" method="post" class="modern-form">
                         <input type="hidden" name="action" value="login">
-                        <input type="hidden" name="redirect" value="<%=request.getParameter("redirect") != null ? sanitizeInput(request.getParameter("redirect")) : ""%>">
+                        <input type="hidden" name="redirect" value="<%=loginDestination(request.getParameter("redirect"))%>">
                         
                         <div class="form-group">
                             <div class="input-wrapper">

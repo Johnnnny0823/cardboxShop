@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ include file="dbConnection.jsp" %>
+<%@ include file="/WEB-INF/member_password.jspf" %>
 <%@ page import="java.sql.*" %>
 
 <%
@@ -23,7 +24,7 @@
         } else if (!password.equals(confirmPassword)) {
             message = "密碼確認不一致！";
             messageType = "error";
-        } else if (password.length() < 4) {
+        } else if (password.trim().length() < 4 || password.length() > 1024) {
             message = "密碼至少需要4個字元！";
             messageType = "error";
         } else if (!email.contains("@") || !email.contains(".")) {
@@ -32,7 +33,7 @@
         } else {
             // 清理輸入資料
             username = sanitizeInput(username.trim());
-            password = sanitizeInput(password.trim());
+            password = password.trim();
             email = sanitizeInput(email.trim());
             phone = phone != null ? sanitizeInput(phone.trim()) : "";
             
@@ -61,7 +62,7 @@
                         "INSERT INTO member (username, password, email, phone, member_level, created_at) VALUES (?, ?, ?, ?, '一般會員', NOW())"
                     );
                     pstmt.setString(1, username);
-                    pstmt.setString(2, password);
+                    pstmt.setString(2, hashPassword(password));
                     pstmt.setString(3, email);
                     pstmt.setString(4, phone.isEmpty() ? null : phone);
                     
@@ -429,4 +430,4 @@
         });
     </script>
 </body>
-</html> 
+</html>

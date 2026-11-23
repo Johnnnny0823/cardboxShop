@@ -1,7 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%@ include file="dbConnection.jsp" %>
+<%@ include file="/WEB-INF/member_password.jspf" %>
 <%
+    if (!"POST".equals(request.getMethod())) {
+        response.setHeader("Allow", "POST");
+        response.sendError(405);
+        return;
+    }
     // 檢查是否已登入
     Integer memberId = (Integer) session.getAttribute("memberId");
     if (memberId == null) {
@@ -79,7 +85,8 @@
         String newPassword = request.getParameter("new_password");
         String confirmPassword = request.getParameter("confirm_password");
         
-        if (!newPassword.equals(confirmPassword)) {
+        if (newPassword == null || !newPassword.equals(confirmPassword)
+                || newPassword.trim().length() < 6 || newPassword.length() > 1024) {
             message = "新密碼與確認密碼不符！";
             messageType = "error";
         } else {
@@ -97,12 +104,14 @@
                 checkStmt.setInt(1, memberId);
                 rs = checkStmt.executeQuery();
                 
-                if (rs.next() && rs.getString("password").equals(currentPassword)) {
+                if (rs.next() && verifyPassword(currentPassword == null ? null : currentPassword.trim(),
+                                                rs.getString("password"))) {
                     // 更新密碼
-                    String updateSql = "UPDATE member SET password = ? WHERE member_id = ?";
+                    String updateSql = "UPDATE member SET password = ? WHERE member_id = ? AND BINARY password = BINARY ?";
                     updateStmt = conn.prepareStatement(updateSql);
-                    updateStmt.setString(1, newPassword);
+                    updateStmt.setString(1, hashPassword(newPassword.trim()));
                     updateStmt.setInt(2, memberId);
+                    updateStmt.setString(3, rs.getString("password"));
                     
                     int updated = updateStmt.executeUpdate();
                     if (updated > 0) {
@@ -132,4 +141,4 @@
     session.setAttribute("update_message", message);
     session.setAttribute("update_message_type", messageType);
     response.sendRedirect("member_area.jsp");
-%> 
+%>

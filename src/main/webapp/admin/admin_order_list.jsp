@@ -1,4 +1,5 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/require_admin.jspf" %>
 <%@ include file="../dbConnection.jsp" %>
 <%@ page import="java.sql.*" %>
 
@@ -136,4 +137,4 @@
         </table>
     </main>
 </body>
-</html> 
+</html>

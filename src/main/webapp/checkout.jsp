@@ -760,9 +760,11 @@
                     
                     try {
                         conn = getConnection();
-                        String cartSql = "SELECT c.quantity, p.product_name, p.price, p.main_image, p.stock " +
+                        String cartSql = "SELECT c.quantity, p.product_name, COALESCE(pv.price, p.price) AS price, " +
+                                       "pv.variant_name, p.main_image, COALESCE(pv.stock, p.stock) AS stock " +
                                        "FROM cart_item c " +
                                        "JOIN product p ON c.product_id = p.product_id " +
+                                       "LEFT JOIN product_variants pv ON c.variant_id > 0 AND pv.variant_id = c.variant_id AND pv.product_id = p.product_id " +
                                        "WHERE c.member_id = ?";
                         pstmt = conn.prepareStatement(cartSql);
                         pstmt.setInt(1, memberId);
@@ -774,6 +776,7 @@
                         while (rs.next()) {
                             int quantity = rs.getInt("quantity");
                             String productName = rs.getString("product_name");
+                            String variantName = rs.getString("variant_name");
                             double price = rs.getDouble("price");
                             String mainImage = rs.getString("main_image");
                             double itemTotal = price * quantity;
@@ -783,7 +786,7 @@
                         <div class="order-item">
                             <img src="<%=htmlEscape(mainImage)%>" alt="<%=htmlEscape(productName)%>" class="item-image">
                             <div class="item-details">
-                            <h4><%=htmlEscape(productName)%></h4>
+                            <h4><%=htmlEscape(productName)%><% if (variantName != null) { %> <small style="color:#4b5563;">（<%=htmlEscape(variantName)%>）</small><% } %></h4>
                             <p>NT$ <%=String.format("%.0f", price)%> × <%=quantity%></p>
                         </div>
                         <div class="item-total">NT$ <%=String.format("%.0f", itemTotal)%></div>

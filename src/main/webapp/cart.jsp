@@ -32,10 +32,12 @@
             
             // 獲取購物車商品
             pstmt = conn.prepareStatement(
-                "SELECT c.product_id, c.quantity, p.product_name, p.price, p.stock, p.main_image, " +
-                "p.player_name, p.team, p.card_year, p.rarity " +
+                "SELECT c.product_id, c.variant_id, c.quantity, p.product_name, " +
+                "COALESCE(pv.price, p.price) AS price, COALESCE(pv.stock, p.stock) AS stock, " +
+                "pv.variant_name, p.main_image, p.player_name, p.team, p.card_year, p.rarity " +
                 "FROM cart_item c " +
                 "JOIN product p ON c.product_id = p.product_id " +
+                "LEFT JOIN product_variants pv ON c.variant_id > 0 AND pv.variant_id = c.variant_id AND pv.product_id = p.product_id " +
                 "WHERE c.member_id = ? " +
                 "ORDER BY c.created_at DESC"
             );
@@ -45,6 +47,8 @@
             while (rs.next()) {
                 Map<String, Object> item = new HashMap<>();
                 item.put("productId", rs.getInt("product_id"));
+                item.put("variantId", rs.getInt("variant_id"));
+                item.put("variantName", rs.getString("variant_name"));
                 item.put("productName", rs.getString("product_name"));
                 item.put("price", rs.getBigDecimal("price"));
                 item.put("quantity", rs.getInt("quantity"));
@@ -764,7 +768,7 @@
                                  onerror="this.src='images/default_product.jpg'">
                             
                             <div class="item-info">
-                                <div class="item-name"><%=htmlEscape(item.get("productName"))%></div>
+                                <div class="item-name"><%=htmlEscape(item.get("productName"))%><% if (item.get("variantName") != null) { %> <span class="detail-tag" style="background:#e8f0fe;color:#1e3a8a;padding:2px 8px;border-radius:4px;font-size:0.82rem;"><%=htmlEscape((String)item.get("variantName"))%></span><% } %></div>
                                 <div class="item-details">
                                     <% if (item.get("playerName") != null) { %>
                                         <span class="detail-tag">🏀 <%=htmlEscape(item.get("playerName"))%></span>
@@ -786,6 +790,7 @@
                             <div class="quantity-controls">
                                 <form action="update_cart.jsp" method="post" class="quantity-form">
                                     <input type="hidden" name="productId" value="<%= item.get("productId") %>">
+                                    <input type="hidden" name="variantId" value="<%= item.get("variantId") %>">
                                     <button type="submit" name="action" value="decrease" class="quantity-btn">−</button>
                                     <input type="number" name="quantity" value="<%= item.get("quantity") %>" 
                                            min="1" max="<%= item.get("stock") %>" class="quantity-input">
@@ -800,6 +805,7 @@
                             
                             <form action="update_cart.jsp" method="post">
                                 <input type="hidden" name="productId" value="<%= item.get("productId") %>">
+                                    <input type="hidden" name="variantId" value="<%= item.get("variantId") %>">
                                 <button type="submit" name="action" value="remove" class="remove-btn">🗑️ 移除</button>
                             </form>
                         </div>

@@ -55,9 +55,15 @@
     String cardYear = "";
     String cardSeries = "";
     String rarity = "";
+    String language = "英文版";
+    boolean isPreorder = false;
+    java.sql.Date releaseDate = null;
+    int maxQtyPerUser = 0;
     boolean isFeatured = false;
     int categoryId = 0;
     String categoryName = "";
+    List<Map<String, Object>> variants = new ArrayList<>();
+    boolean hasRestockAlert = false;
     
     // 評論相關變數
     List<Map<String, Object>> reviews = new ArrayList<>();
@@ -69,7 +75,7 @@
         conn = getConnection();
         String sql = "SELECT p.product_name, p.description, p.price, p.stock, p.main_image, " +
                    "p.image_2, p.image_3, p.image_4, p.player_name, p.team, p.card_year, " +
-                   "p.card_series, p.rarity, p.is_featured, p.category_id, c.category_name " +
+                   "p.card_series, p.rarity, p.language, p.is_preorder, p.release_date, COALESCE(p.max_qty_per_user, 0) AS max_qty_per_user, p.is_featured, p.category_id, c.category_name " +
                    "FROM product p LEFT JOIN category c ON p.category_id = c.category_id " +
                    "WHERE p.product_id = ?";
         pstmt = conn.prepareStatement(sql);
@@ -94,6 +100,10 @@
         cardYear = rs.getString("card_year");
         cardSeries = rs.getString("card_series");
         rarity = rs.getString("rarity") != null ? rs.getString("rarity") : "";
+        if (rs.getString("language") != null) language = rs.getString("language");
+        isPreorder = rs.getBoolean("is_preorder");
+        releaseDate = rs.getDate("release_date");
+        maxQtyPerUser = rs.getInt("max_qty_per_user");
         isFeatured = rs.getBoolean("is_featured");
         categoryId = rs.getInt("category_id");
         categoryName = rs.getString("category_name") != null ? rs.getString("category_name") : "";
@@ -101,6 +111,40 @@
         rs.close();
         pstmt.close();
         
+
+        // 讀取規格／卡況變體
+        String variantSQL = "SELECT variant_id, variant_name, condition_grade, price, stock FROM product_variants WHERE product_id = ? AND is_active = 1 ORDER BY variant_id ASC";
+        pstmt = conn.prepareStatement(variantSQL);
+        pstmt.setInt(1, productId);
+        rs = pstmt.executeQuery();
+        while (rs.next()) {
+            Map<String, Object> v = new HashMap<>();
+            v.put("id", rs.getInt("variant_id"));
+            v.put("name", rs.getString("variant_name"));
+            v.put("grade", rs.getString("condition_grade"));
+            v.put("price", rs.getDouble("price"));
+            v.put("stock", rs.getInt("stock"));
+            variants.add(v);
+        }
+        rs.close();
+        pstmt.close();
+
+        if (!variants.isEmpty()) {
+            price = (Double) variants.get(0).get("price");
+            stock = (Integer) variants.get(0).get("stock");
+        }
+
+        if (isLoggedIn) {
+            String alertSQL = "SELECT COUNT(*) FROM restock_notifications WHERE member_id = ? AND product_id = ? AND status = '等待通知'";
+            pstmt = conn.prepareStatement(alertSQL);
+            pstmt.setInt(1, memberId);
+            pstmt.setInt(2, productId);
+            rs = pstmt.executeQuery();
+            if (rs.next()) hasRestockAlert = rs.getInt(1) > 0;
+            rs.close();
+            pstmt.close();
+        }
+
         // 獲取評論統計
         String ratingSQL = "SELECT COUNT(*) as total_reviews, COALESCE(AVG(rating), 0) as avg_rating FROM product_reviews WHERE product_id = ?";
         pstmt = conn.prepareStatement(ratingSQL);
@@ -179,9 +223,14 @@
 
             <div class="product-info">
                 <h1><%=htmlEscape(productName)%></h1>
+                <% if (isPreorder) { %>
+                <div style="display:inline-block;background:#fef3c7;color:#92400e;padding:4px 10px;border-radius:6px;font-size:0.88rem;font-weight:700;margin-bottom:10px;">
+                    預購商品<%= releaseDate != null ? " · 預計發售日 " + releaseDate.toString() : "" %>
+                </div>
+                <% } %>
                 
                 <div class="price-section">
-                    <strong>價格: NT$ <%=String.format("%,.0f", price)%></strong>
+                    <strong id="displayPrice">價格: NT$ <%=String.format("%,.0f", price)%></strong>
                 </div>
                 
                 <div class="rating-section">
@@ -235,6 +284,16 @@
                             <span class="meta-value"><%=cardSeries%></span>
                         </div>
                     <% } %>
+                                        <div class="meta-item">
+                        <span class="meta-label">語系:</span>
+                        <span class="meta-value"><%=htmlEscape(language)%></span>
+                    </div>
+                    <% if (maxQtyPerUser > 0) { %>
+                    <div class="meta-item">
+                        <span class="meta-label">限購:</span>
+                        <span class="meta-value" style="color:#b91c1c;font-weight:700;">每人限購 <%=maxQtyPerUser%> 件</span>
+                    </div>
+                    <% } %>
                     <% if (!rarity.isEmpty()) { %>
                         <div class="meta-item">
                             <span class="meta-label">稀有度:</span>
@@ -244,10 +303,22 @@
                 </div>
                 <% } %>
                 
+                                <% if (!variants.isEmpty()) { %>
+                <div class="variant-section" style="margin: 14px 0;">
+                    <label for="variantSelect" style="font-weight:600;display:block;margin-bottom:6px;">規格 / 卡況選擇:</label>
+                    <select id="variantSelect" onchange="onVariantChange(this)" style="padding:8px 12px;border:1px solid #d1d5db;border-radius:6px;width:100%;max-width:360px;">
+                        <% for (Map<String, Object> v : variants) { %>
+                            <option value="<%=v.get("id")%>" data-price="<%=String.format("%.0f", (Double)v.get("price"))%>" data-stock="<%=v.get("stock")%>">
+                                <%=htmlEscape((String)v.get("name"))%> — NT$ <%=String.format("%,.0f", (Double)v.get("price"))%> (庫存 <%=v.get("stock")%>)
+                            </option>
+                        <% } %>
+                    </select>
+                </div>
+                <% } %>
                 <div class="quantity-section">
                     <label for="quantity">數量:</label>
                     <input type="number" id="quantity" name="quantity" value="1" min="1" max="<%=Math.min(stock, 10)%>" class="quantity-input">
-                    <div style="margin-top: 10px; color: #666;">
+                    <div id="stockStatusText" style="margin-top: 10px; color: #666;">
                         <% if (stock > 10) { %>
                             庫存充足 (<%=stock%> 件)
                         <% } else if (stock > 0) { %>
@@ -265,7 +336,20 @@
                         <a href="member.jsp?redirect=product_detail.jsp?id=<%=productId%>" class="add-to-cart-btn" style="text-decoration: none; display: inline-block;">登入購買</a>
                                 <% } %>
                             <% } else { %>
-                    <button class="add-to-cart-btn" disabled style="background: #6c757d; cursor: not-allowed;">缺貨中</button>
+                    <% if (isLoggedIn) { %>
+                    <form action="restock_notify.jsp" method="post" style="display:inline-block;">
+                        <input type="hidden" name="product_id" value="<%=productId%>">
+                        <input type="hidden" name="variant_id" id="restockVariantId" value="<%= variants.isEmpty() ? 0 : variants.get(0).get("id") %>">
+                        <% if (hasRestockAlert) { %>
+                            <input type="hidden" name="action" value="cancel">
+                            <button type="submit" class="add-to-cart-btn" style="background:#4b5563;">已登記補貨通知（點擊取消）</button>
+                        <% } else { %>
+                            <button type="submit" class="add-to-cart-btn" style="background:#0f766e;">🔔 缺貨中 · 登記補貨通知</button>
+                        <% } %>
+                    </form>
+                    <% } else { %>
+                    <a href="member.jsp?redirect=product_detail.jsp?id=<%=productId%>" class="add-to-cart-btn" style="text-decoration:none;display:inline-block;background:#0f766e;">登入登記補貨通知</a>
+                    <% } %>
                             <% } %>
             </div>
         </section>
@@ -438,12 +522,28 @@
         }
         
         // 加入購物車功能
+        function onVariantChange(selectEl) {
+            const opt = selectEl.options[selectEl.selectedIndex];
+            const price = Number(opt.dataset.price || 0);
+            const stock = Number(opt.dataset.stock || 0);
+            const priceEl = document.getElementById('displayPrice');
+            if (priceEl) priceEl.textContent = '價格: NT$ ' + price.toLocaleString();
+            const qtyEl = document.getElementById('quantity');
+            if (qtyEl) qtyEl.max = Math.max(1, Math.min(stock, 10));
+            const stockEl = document.getElementById('stockStatusText');
+            if (stockEl) stockEl.textContent = stock > 0 ? '目前庫存 (' + stock + ' 件)' : '缺貨中';
+            const restockVid = document.getElementById('restockVariantId');
+            if (restockVid) restockVid.value = selectEl.value;
+        }
+
         function addToCart(productId) {
             const quantityInput = document.getElementById('quantity');
             const quantity = quantityInput ? quantityInput.value : 1;
+            const variantSelect = document.getElementById('variantSelect');
+            const variant_id = variantSelect ? variantSelect.value : 0;
             
             if (confirm('確定要加入購物車嗎？')) {
-                submitStorePost('add_to_cart.jsp', { product_id: productId, quantity });
+                submitStorePost('add_to_cart.jsp', { product_id: productId, variant_id: variant_id, quantity: quantity });
             }
         }
     </script>

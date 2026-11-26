@@ -141,6 +141,44 @@
                 </select>
             </div>
             
+                        <div class="form-group">
+                <label for="language">語系</label>
+                <select id="language" name="language">
+                    <% String curLang = rs.getString("language") != null ? rs.getString("language") : "英文版"; %>
+                    <option value="繁體中文" <%= "繁體中文".equals(curLang) ? "selected" : "" %>>繁體中文</option>
+                    <option value="日文版" <%= "日文版".equals(curLang) ? "selected" : "" %>>日文版</option>
+                    <option value="英文版" <%= "英文版".equals(curLang) ? "selected" : "" %>>英文版</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="is_preorder">預購狀態</label>
+                <select id="is_preorder" name="is_preorder">
+                    <option value="0" <%= !rs.getBoolean("is_preorder") ? "selected" : "" %>>現貨販售</option>
+                    <option value="1" <%= rs.getBoolean("is_preorder") ? "selected" : "" %>>預購商品</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="release_date">預計發售日（選填）</label>
+                <input type="text" id="release_date" name="release_date" placeholder="YYYY-MM-DD" value="<%= rs.getDate("release_date") != null ? rs.getDate("release_date").toString() : "" %>">
+            </div>
+
+            <div class="form-group">
+                <label for="max_qty_per_user">每人限購數量（0 代表不限）</label>
+                <input type="number" id="max_qty_per_user" name="max_qty_per_user" value="<%= rs.getInt("max_qty_per_user") %>" min="0" required>
+            </div>
+
+            <div class="form-group" style="border-top:1px solid #e5e7eb;padding-top:16px;">
+                <label>新增規格／卡況變體（選填，例如：全新有封膜 / Near Mint）</label>
+                <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;">
+                    <input type="text" name="new_variant_name" placeholder="規格名稱（例：拆膜無封膜）">
+                    <input type="text" name="new_variant_grade" placeholder="卡況/封膜（例：No Shrink）">
+                    <input type="number" name="new_variant_price" placeholder="變體價格" min="0" step="0.01">
+                    <input type="number" name="new_variant_stock" placeholder="變體庫存" min="0">
+                </div>
+            </div>
+
             <div class="form-group">
                 <label for="description">商品描述</label>
                 <textarea id="description" name="description" required><%=htmlEscape(rs.getString("description") != null ? rs.getString("description") : "")%></textarea>
